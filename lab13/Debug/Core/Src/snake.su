@@ -1,0 +1,4 @@
+snake.c:21:6:draw_snake	24	static
+snake.c:40:6:snake_update	24	static
+snake.c:61:6:snake_start	16	static
+snake.c:74:6:candy	8	static
