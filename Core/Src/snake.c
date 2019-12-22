@@ -38,8 +38,8 @@ void snake_eat(void) {            //判断是否吃到苹果
         LCD_Draw_Circle(apple_x, apple_y, apple_shape - 1);
         snake_x[snake_length] = snake_x[snake_length - 1];
         snake_y[snake_length] = snake_y[snake_length - 1];
-        apple_x = rand() % (x2 - x1) + x1;
-        apple_y = rand() % (y2 - y1) + y1;
+        apple_x = rand() % (x2 - x1 - apple_shape) + x1 + apple_shape;
+        apple_y = rand() % (y2 - y1 - apple_shape) + y1 + apple_shape;
         snake_speed -= 2;
         HAL_Delay(100);
         POINT_COLOR = BLACK;
@@ -126,8 +126,8 @@ void refreshStone() {
     stone_cnt = 0;
     POINT_COLOR = WHITE;
     LCD_Draw_Circle(stone_x, stone_y, snake_shape);
-    stone_x = rand() % (x2 - x1) + x1;
-    stone_y = rand() % (y2 - y1) + y1;
+    stone_x = rand() % (x2 - x1 - snake_shape) + x1 + snake_shape;
+    stone_y = rand() % (y2 - y1 - snake_shape) + y1 + snake_shape;
 
     POINT_COLOR = RED;
     LCD_Draw_Circle(stone_x, stone_y, snake_shape);
@@ -184,6 +184,8 @@ void snake_init(uint16_t x, uint16_t y, uint16_t speed, uint8_t shape) { //主�
                     LCD_Clear(WHITE);
                     POINT_COLOR = BLACK;
                     LCD_DrawRectangle(x1, y1, x2, y2);
+                    LCD_ShowString(10, 0, 200, y1, 16, "STM32 Snake       Score:");
+                    LCD_ShowxNum(200, 0, snake_length - 5, 3, 16, 0);
                 }
             }
             if (stone_cnt == 25) refreshStone();
@@ -196,11 +198,11 @@ void snake_init(uint16_t x, uint16_t y, uint16_t speed, uint8_t shape) { //主�
             LCD_Draw_Circle(snake_x[snake_length], snake_y[snake_length], snake_shape);
             POINT_COLOR = BLACK;
 
-            LCD_Draw_Circle(snake_x[0], snake_y[0], snake_shape);
             for (m = snake_length; m >= 0; m--) {
                 if (m > 0) {
                     snake_x[m] = snake_x[m - 1];
                     snake_y[m] = snake_y[m - 1];
+                    LCD_Draw_Circle(snake_x[m], snake_y[m], snake_shape);
                 }
             }
         }
