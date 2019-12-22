@@ -97,7 +97,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
-    snake_init(30,30,85,5);
+    snake_init(30,30,95,5);
 
   /* USER CODE END 2 */
 

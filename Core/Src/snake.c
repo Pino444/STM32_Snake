@@ -32,7 +32,7 @@ void snake_eat(void) {            //判断是否吃到苹果
         abs(snake_y[0] - apple_y) < (snake_shape + apple_shape)) {
         HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
         POINT_COLOR = WHITE;
-        LCD_ShowxNum(150, 0, snake_length - 5, 3, 16, 0);
+        LCD_ShowxNum(200, 0, snake_length - 5, 3, 16, 0);
         snake_length++;
         LCD_Draw_Circle(apple_x, apple_y, apple_shape);
         LCD_Draw_Circle(apple_x, apple_y, apple_shape - 1);
@@ -40,10 +40,10 @@ void snake_eat(void) {            //判断是否吃到苹果
         snake_y[snake_length] = snake_y[snake_length - 1];
         apple_x = rand() % (x2 - x1) + x1;
         apple_y = rand() % (y2 - y1) + y1;
-        snake_speed -= 3;
+        snake_speed -= 2;
         HAL_Delay(100);
         POINT_COLOR = BLACK;
-        LCD_ShowxNum(150, 0, snake_length - 5, 3, 16, 0);
+        LCD_ShowxNum(200, 0, snake_length - 5, 3, 16, 0);
         HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
     }
 }
@@ -148,8 +148,8 @@ void snake_init(uint16_t x, uint16_t y, uint16_t speed, uint8_t shape) { //主�
     y2 = lcddev.height - snake_shape + 1;
     POINT_COLOR = BLACK;
     LCD_DrawRectangle(x1, y1, x2, y2);
-    LCD_ShowString(10, 0, 150, y1, 16, "STM32 Snake Score:");
-    LCD_ShowxNum(150, 0, snake_length - 5, 3, 16, 0);
+    LCD_ShowString(10, 0, 200, y1, 16, "STM32 Snake       Score:");
+    LCD_ShowxNum(200, 0, snake_length - 5, 3, 16, 0);
     while (!snake_alive) {
 //        snake_scan();
         if (i < snake_speed) {
