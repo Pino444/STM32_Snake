@@ -40,8 +40,8 @@ void snake_eat(void) {            //判断是否吃到苹果
         LCD_Draw_Circle(apple_x, apple_y, apple_shape - 1);
         snake_x[snake_length] = snake_x[snake_length - 1];
         snake_y[snake_length] = snake_y[snake_length - 1];
-        apple_x = rand() % (x2 - x1 - apple_shape) + x1 + apple_shape;
-        apple_y = rand() % (y2 - y1 - apple_shape) + y1 + apple_shape;
+        apple_x = rand() % (x2 - x1 - 2 * apple_shape) + x1 + apple_shape;
+        apple_y = rand() % (y2 - y1 - 2 * apple_shape) + y1 + apple_shape;
         snake_speed -= 2;
         HAL_Delay(100);
         POINT_COLOR = BLACK;
@@ -130,8 +130,8 @@ void refreshStone() {
     stone_cnt = 0;
     POINT_COLOR = WHITE;
     LCD_Draw_Circle(stone_x, stone_y, snake_shape);
-    stone_x = rand() % (x2 - x1 - snake_shape) + x1 + snake_shape;
-    stone_y = rand() % (y2 - y1 - snake_shape) + y1 + snake_shape;
+    stone_x = rand() % (x2 - x1 - 2 * snake_shape) + x1 + snake_shape;
+    stone_y = rand() % (y2 - y1 - 2 * snake_shape) + y1 + snake_shape;
 
     POINT_COLOR = RED;
     LCD_Draw_Circle(stone_x, stone_y, snake_shape);
