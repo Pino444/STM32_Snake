@@ -5,7 +5,7 @@
 #include "snake.h"
 #include "string.h"
 
-
+const int color[12] = {0x0000, 0x001F, 0XF81F, 0XFFE0, 0X07FF, 0xF81F, 0x07E0, 0x7FFF, 0xFFE0, 0XBC40, 0XFC07, 0X8430};
 uint8_t snake_pos = RIGHT;
 uint8_t key;
 short snake_alive = 0;
@@ -22,6 +22,8 @@ uint16_t apple_shape = 4;
 uint16_t x1, x2, y1, y2;
 short m;
 short stone_cnt = 9;
+int apple_color = RED;
+int snake_color = BLACK;
 
 
 void stateJudgement();
@@ -45,6 +47,8 @@ void snake_eat(void) {            //判断是否吃到苹果
         POINT_COLOR = BLACK;
         LCD_ShowxNum(200, 0, snake_length - 5, 3, 16, 0);
         HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
+        snake_color = apple_color;
+        apple_color = color[rand() % 12];
     }
 }
 
@@ -164,6 +168,7 @@ void snake_init(uint16_t x, uint16_t y, uint16_t speed, uint8_t shape) { //主�
             stateJudgement();
             while (snake_alive) {
                 HAL_GPIO_TogglePin(LED0_GPIO_Port, LED0_Pin);
+                POINT_COLOR = BLACK;
                 LCD_ShowString(lcddev.width / 2 - 40, lcddev.height / 2 - 32, 200, 16, 16, "Game Over!");
                 LCD_ShowString(lcddev.width / 2 - 80, lcddev.height / 2 - 16, 200, 16, 16, "Press KEY_WK To Play");
                 LCD_ShowString(lcddev.width / 2 - 20, lcddev.height / 2, 200, 16, 16, "Again!");
@@ -177,32 +182,41 @@ void snake_init(uint16_t x, uint16_t y, uint16_t speed, uint8_t shape) { //主�
                     stone_cnt = 9;
                     snake_speed = speed;
                     snake_length = 5;
+                    snake_color = BLACK;
+                    apple_color = RED;
                     if (x % shape != 0) snake_x[0] = shape * 2;
                     else snake_x[0] = x;
                     if (y % shape != 0) snake_y[0] = shape * 2;
                     else snake_y[0] = y;
                     LCD_Clear(WHITE);
-                    POINT_COLOR = BLACK;
                     LCD_DrawRectangle(x1, y1, x2, y2);
                     LCD_ShowString(10, 0, 200, y1, 16, "STM32 Snake       Score:");
                     LCD_ShowxNum(200, 0, snake_length - 5, 3, 16, 0);
+
                 }
             }
             if (stone_cnt == 25) refreshStone();
-            // 画苹果
-            POINT_COLOR = BRRED;
-            LCD_Draw_Circle(apple_x, apple_y, apple_shape);
-            LCD_Draw_Circle(apple_x, apple_y, apple_shape - 1);
-            // 把尾巴变白
+
+//             把尾巴变白
             POINT_COLOR = WHITE;
             LCD_Draw_Circle(snake_x[snake_length], snake_y[snake_length], snake_shape);
-            POINT_COLOR = BLACK;
+            LCD_Draw_Circle(snake_x[snake_length], snake_y[snake_length], snake_shape - 1);
+            LCD_Draw_Circle(snake_x[snake_length], snake_y[snake_length], snake_shape - 3);
 
+            // 画苹果
+            POINT_COLOR = apple_color;
+            LCD_Draw_Circle(apple_x, apple_y, apple_shape);
+            LCD_Draw_Circle(apple_x, apple_y, apple_shape - 1);
+
+            POINT_COLOR = snake_color;
             for (m = snake_length; m >= 0; m--) {
                 if (m > 0) {
                     snake_x[m] = snake_x[m - 1];
                     snake_y[m] = snake_y[m - 1];
                     LCD_Draw_Circle(snake_x[m], snake_y[m], snake_shape);
+                    LCD_Draw_Circle(snake_x[m], snake_y[m], snake_shape - 1);
+                    LCD_Draw_Circle(snake_x[m], snake_y[m], snake_shape - 3);
+
                 }
             }
         }
