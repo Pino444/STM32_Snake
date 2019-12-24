@@ -15,16 +15,19 @@ uint16_t snake_speed;
 uint8_t snake_shape;
 uint16_t apple_x = 100;
 uint16_t apple_y = 100;
-uint16_t stone_x = 50;
-uint16_t stone_y = 150;
+uint16_t stone_x[5];
+uint16_t stone_y[5];
 uint16_t snake_length = 5;
 uint16_t apple_shape = 4;
 uint16_t x1, x2, y1, y2;
 short m;
 short stone_cnt = 9;
+int apple_change = 40;
+// 这样写 可以使游戏初始就有苹果
+int apple_cnt = 39;
 int apple_color = RED;
 int snake_color = BLACK;
-
+int stone_num = 1;
 
 void stateJudgement();
 
@@ -33,22 +36,35 @@ void snake_eat(void) {            //判断是否吃到苹果
     if (abs(snake_x[0] - apple_x) < (snake_shape + apple_shape) &&
         abs(snake_y[0] - apple_y) < (snake_shape + apple_shape)) {
         HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
-        POINT_COLOR = WHITE;
         LCD_ShowxNum(200, 0, snake_length - 5, 3, 16, 0);
         snake_length++;
-        LCD_Draw_Circle(apple_x, apple_y, apple_shape);
-        LCD_Draw_Circle(apple_x, apple_y, apple_shape - 1);
-        snake_x[snake_length] = snake_x[snake_length - 1];
-        snake_y[snake_length] = snake_y[snake_length - 1];
-        apple_x = rand() % (x2 - x1 - 2 * apple_shape) + x1 + apple_shape;
-        apple_y = rand() % (y2 - y1 - 2 * apple_shape) + y1 + apple_shape;
-        snake_speed -= 2;
-        HAL_Delay(100);
-        POINT_COLOR = BLACK;
-        LCD_ShowxNum(200, 0, snake_length - 5, 3, 16, 0);
-        HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
         snake_color = apple_color;
         apple_color = color[rand() % 12];
+        refreshApple();
+//        snake_speed -= 2;
+        // 总共有5关
+        if (snake_length - 5 > 0 && (snake_length - 5) % 10 == 0 && apple_change > 20) {
+            stone_num += 1;
+            snake_speed -= 15;
+            apple_change -= 5;
+            POINT_COLOR = BLACK;
+            LCD_ShowxNum(110, 0, (snake_length - 5) / 10, 2, 16, 0);
+            LCD_ShowxNum(110, 0, (snake_length - 5) / 10 + 1, 2, 16, 0);
+            POINT_COLOR = RED;
+            LCD_ShowString(80, lcddev.height / 2 - 16, 200, y1, 16, "Level Up!");
+            for (m = 20; m >= 0; m--) {
+                HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
+                HAL_Delay(50);
+            }
+            POINT_COLOR = WHITE;
+            LCD_ShowString(80, lcddev.height / 2 - 16, 200, y1, 16, "Level Up!");
+        }
+
+
+        HAL_Delay(100);
+        HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
+        POINT_COLOR = BLACK;
+        LCD_ShowxNum(200, 0, snake_length - 5, 3, 16, 0);
     }
 }
 
@@ -129,12 +145,28 @@ void turnLeft() {
 void refreshStone() {
     stone_cnt = 0;
     POINT_COLOR = WHITE;
-    LCD_Draw_Circle(stone_x, stone_y, snake_shape);
-    stone_x = rand() % (x2 - x1 - 2 * snake_shape) + x1 + snake_shape;
-    stone_y = rand() % (y2 - y1 - 2 * snake_shape) + y1 + snake_shape;
-
+    for (m = stone_num - 1; m >= 0; m--) {
+        LCD_Draw_Circle(stone_x[m], stone_y[m], snake_shape);
+    }
     POINT_COLOR = RED;
-    LCD_Draw_Circle(stone_x, stone_y, snake_shape);
+    for (m = stone_num - 1; m >= 0; m--) {
+        stone_x[m] = rand() % (x2 - x1 - 2 * snake_shape) + x1 + snake_shape;
+        stone_y[m] = rand() % (y2 - y1 - 2 * snake_shape) + y1 + snake_shape;
+        LCD_Draw_Circle(stone_x[m], stone_y[m], snake_shape);
+    }
+}
+
+
+void refreshApple() {
+    apple_cnt = 0;
+    POINT_COLOR = WHITE;
+    LCD_Draw_Circle(apple_x, apple_y, apple_shape);
+    LCD_Draw_Circle(apple_x, apple_y, apple_shape - 1);
+    apple_x = rand() % (x2 - x1 - 2 * apple_shape) + x1 + apple_shape;
+    apple_y = rand() % (y2 - y1 - 2 * apple_shape) + y1 + apple_shape;
+    POINT_COLOR = apple_color;
+    LCD_Draw_Circle(apple_x, apple_y, apple_shape);
+    LCD_Draw_Circle(apple_x, apple_y, apple_shape - 1);
 }
 
 void snake_init(uint16_t x, uint16_t y, uint16_t speed, uint8_t shape) { //主运行函数
@@ -152,8 +184,10 @@ void snake_init(uint16_t x, uint16_t y, uint16_t speed, uint8_t shape) { //主�
     y2 = lcddev.height - snake_shape + 1;
     POINT_COLOR = BLACK;
     LCD_DrawRectangle(x1, y1, x2, y2);
-    LCD_ShowString(10, 0, 200, y1, 16, "STM32 Snake       Score:");
+    LCD_ShowString(10, 0, 200, y1, 16, "Snake  Level:     Score:");
     LCD_ShowxNum(200, 0, snake_length - 5, 3, 16, 0);
+    LCD_ShowxNum(110, 0, 1, 2, 16, 0);
+
     while (!snake_alive) {
 //        snake_scan();
         if (i < snake_speed) {
@@ -161,6 +195,7 @@ void snake_init(uint16_t x, uint16_t y, uint16_t speed, uint8_t shape) { //主�
             i++;
         } else {
             stone_cnt++;
+            apple_cnt++;
             HAL_Delay(3);
             i = 0;
             snake_eat();
@@ -180,33 +215,32 @@ void snake_init(uint16_t x, uint16_t y, uint16_t speed, uint8_t shape) { //主�
                     snake_alive = 0;
                     snake_pos = RIGHT;
                     stone_cnt = 9;
+                    apple_change = 40;
+                    apple_cnt = 39;
                     snake_speed = speed;
                     snake_length = 5;
                     snake_color = BLACK;
                     apple_color = RED;
+                    stone_num = 1;
                     if (x % shape != 0) snake_x[0] = shape * 2;
                     else snake_x[0] = x;
                     if (y % shape != 0) snake_y[0] = shape * 2;
                     else snake_y[0] = y;
                     LCD_Clear(WHITE);
                     LCD_DrawRectangle(x1, y1, x2, y2);
-                    LCD_ShowString(10, 0, 200, y1, 16, "STM32 Snake       Score:");
+                    LCD_ShowString(10, 0, 200, y1, 16, "Snake  Level:     Score:");
                     LCD_ShowxNum(200, 0, snake_length - 5, 3, 16, 0);
+                    LCD_ShowxNum(110, 0, 1, 2, 16, 0);
 
                 }
             }
-            if (stone_cnt == 25) refreshStone();
-
+            if (stone_cnt == 40) refreshStone();
+            if (apple_cnt == apple_change) refreshApple();
 //             把尾巴变白
             POINT_COLOR = WHITE;
             LCD_Draw_Circle(snake_x[snake_length], snake_y[snake_length], snake_shape);
             LCD_Draw_Circle(snake_x[snake_length], snake_y[snake_length], snake_shape - 1);
             LCD_Draw_Circle(snake_x[snake_length], snake_y[snake_length], snake_shape - 3);
-
-            // 画苹果
-            POINT_COLOR = apple_color;
-            LCD_Draw_Circle(apple_x, apple_y, apple_shape);
-            LCD_Draw_Circle(apple_x, apple_y, apple_shape - 1);
 
             POINT_COLOR = snake_color;
             for (m = snake_length; m >= 0; m--) {
@@ -216,7 +250,6 @@ void snake_init(uint16_t x, uint16_t y, uint16_t speed, uint8_t shape) { //主�
                     LCD_Draw_Circle(snake_x[m], snake_y[m], snake_shape);
                     LCD_Draw_Circle(snake_x[m], snake_y[m], snake_shape - 1);
                     LCD_Draw_Circle(snake_x[m], snake_y[m], snake_shape - 3);
-
                 }
             }
         }
@@ -224,10 +257,13 @@ void snake_init(uint16_t x, uint16_t y, uint16_t speed, uint8_t shape) { //主�
 }
 
 void stateJudgement() {
-    if (abs(snake_x[0] - stone_x) < 2 * snake_shape && abs(snake_y[0] - stone_y) < 2 * snake_shape) {
-        snake_alive = 1;
-        return;
+    for (m = stone_num - 1; m >= 0; m--) {
+        if (abs(snake_x[0] - stone_x[m]) < 2 * snake_shape && abs(snake_y[0] - stone_y[m]) < 2 * snake_shape) {
+            snake_alive = 1;
+            return;
+        }
     }
+
     if (snake_y[0] < snake_shape + y1 || snake_y[0] > y2 - snake_shape ||
         snake_x[0] < snake_shape + x1 || snake_x[0] > x2 - snake_shape) {
         snake_alive = 1;

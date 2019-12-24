@@ -21,4 +21,6 @@ void turnRight();
 
 void turnLeft();
 
+void refreshApple();
+
 #endif
