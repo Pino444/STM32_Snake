@@ -32,7 +32,7 @@
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
-    HAL_Delay(100);
+    HAL_Delay(10);
     snake_scan(GPIO_Pin);
 //    HAL_Delay(10);
     __HAL_GPIO_EXTI_CLEAR_IT(GPIO_Pin);

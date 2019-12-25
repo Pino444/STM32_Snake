@@ -17,11 +17,11 @@ uint16_t apple_x = 100;
 uint16_t apple_y = 100;
 uint16_t stone_x[5];
 uint16_t stone_y[5];
-uint16_t snake_length = 5;
+uint16_t snake_length = 1;
 uint16_t apple_shape = 4;
 uint16_t x1, x2, y1, y2;
 short m;
-short stone_cnt = 9;
+short stone_cnt = 39;
 int apple_change = 40;
 // 这样写 可以使游戏初始就有苹果
 int apple_cnt = 39;
@@ -36,20 +36,21 @@ void snake_eat(void) {            //判断是否吃到苹果
     if (abs(snake_x[0] - apple_x) < (snake_shape + apple_shape) &&
         abs(snake_y[0] - apple_y) < (snake_shape + apple_shape)) {
         HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
-        LCD_ShowxNum(200, 0, snake_length - 5, 3, 16, 0);
+        LCD_ShowxNum(200, 0, snake_length - 1, 3, 16, 0);
         snake_length++;
         snake_color = apple_color;
         apple_color = color[rand() % 12];
         refreshApple();
 //        snake_speed -= 2;
         // 总共有5关
-        if (snake_length - 5 > 0 && (snake_length - 5) % 10 == 0 && apple_change > 20) {
+        if (snake_length - 1 > 0 && (snake_length - 1) % 10 == 0 && apple_change > 20) {
             stone_num += 1;
             snake_speed -= 15;
             apple_change -= 5;
+            refreshStone();
             POINT_COLOR = BLACK;
-            LCD_ShowxNum(110, 0, (snake_length - 5) / 10, 2, 16, 0);
-            LCD_ShowxNum(110, 0, (snake_length - 5) / 10 + 1, 2, 16, 0);
+            LCD_ShowxNum(110, 0, (snake_length - 1) / 10, 2, 16, 0);
+            LCD_ShowxNum(110, 0, (snake_length - 1) / 10 + 1, 2, 16, 0);
             POINT_COLOR = RED;
             LCD_ShowString(80, lcddev.height / 2 - 16, 200, y1, 16, "Level Up!");
             for (m = 20; m >= 0; m--) {
@@ -64,7 +65,7 @@ void snake_eat(void) {            //判断是否吃到苹果
         HAL_Delay(100);
         HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
         POINT_COLOR = BLACK;
-        LCD_ShowxNum(200, 0, snake_length - 5, 3, 16, 0);
+        LCD_ShowxNum(200, 0, snake_length - 1, 3, 16, 0);
     }
 }
 
@@ -185,7 +186,7 @@ void snake_init(uint16_t x, uint16_t y, uint16_t speed, uint8_t shape) { //主�
     POINT_COLOR = BLACK;
     LCD_DrawRectangle(x1, y1, x2, y2);
     LCD_ShowString(10, 0, 200, y1, 16, "Snake  Level:     Score:");
-    LCD_ShowxNum(200, 0, snake_length - 5, 3, 16, 0);
+    LCD_ShowxNum(200, 0, snake_length - 1, 3, 16, 0);
     LCD_ShowxNum(110, 0, 1, 2, 16, 0);
 
     while (!snake_alive) {
@@ -214,11 +215,11 @@ void snake_init(uint16_t x, uint16_t y, uint16_t speed, uint8_t shape) { //主�
                     memset(snake_y, 0, 100);
                     snake_alive = 0;
                     snake_pos = RIGHT;
-                    stone_cnt = 9;
+                    stone_cnt = 39;
                     apple_change = 40;
                     apple_cnt = 39;
                     snake_speed = speed;
-                    snake_length = 5;
+                    snake_length = 1;
                     snake_color = BLACK;
                     apple_color = RED;
                     stone_num = 1;
@@ -229,7 +230,7 @@ void snake_init(uint16_t x, uint16_t y, uint16_t speed, uint8_t shape) { //主�
                     LCD_Clear(WHITE);
                     LCD_DrawRectangle(x1, y1, x2, y2);
                     LCD_ShowString(10, 0, 200, y1, 16, "Snake  Level:     Score:");
-                    LCD_ShowxNum(200, 0, snake_length - 5, 3, 16, 0);
+                    LCD_ShowxNum(200, 0, snake_length - 1, 3, 16, 0);
                     LCD_ShowxNum(110, 0, 1, 2, 16, 0);
 
                 }
@@ -247,11 +248,16 @@ void snake_init(uint16_t x, uint16_t y, uint16_t speed, uint8_t shape) { //主�
                 if (m > 0) {
                     snake_x[m] = snake_x[m - 1];
                     snake_y[m] = snake_y[m - 1];
-                    LCD_Draw_Circle(snake_x[m], snake_y[m], snake_shape);
-                    LCD_Draw_Circle(snake_x[m], snake_y[m], snake_shape - 1);
-                    LCD_Draw_Circle(snake_x[m], snake_y[m], snake_shape - 3);
                 }
+                LCD_Draw_Circle(snake_x[m], snake_y[m], snake_shape);
+                LCD_Draw_Circle(snake_x[m], snake_y[m], snake_shape - 1);
+                LCD_Draw_Circle(snake_x[m], snake_y[m], snake_shape - 3);
             }
+            POINT_COLOR = RED;
+            for (m = stone_num - 1; m >= 0; m--) {
+                LCD_Draw_Circle(stone_x[m], stone_y[m], snake_shape);
+            }
+
         }
     }
 }

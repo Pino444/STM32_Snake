@@ -23,4 +23,6 @@ void turnLeft();
 
 void refreshApple();
 
+void refreshStone();
+
 #endif
