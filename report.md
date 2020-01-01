@@ -33,3 +33,15 @@ This project is to implement the Snake Game on STM32 with LCD display and keys t
     1. Draw points, circles, lines and rectangles.
     2. Fill area with color.
     3. Write character, number and string.
+
+## 5 Implementation of Main Function
+
+> TODO
+
+## 6 Screenshots
+
+> TODO
+
+## 7 Potential improvement
+
+> TODO
