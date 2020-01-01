@@ -195,6 +195,6 @@ void snake_eat(void) {            //判断是否吃到苹果
 ![屏幕快照 2020-01-01 下午5.41.19](media/15778523408429/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202020-01-01%20%E4%B8%8B%E5%8D%885.41.19.png)
 
 
-## 6 Potential improvement
+## 6 Potential Improvement
 
-> TODO
+Due to the time limit, some features still can be improved. The level setting we implement in this project just simply increase the number of obstacles instead of various mazes that are common in usual Snake Game. Besides, a special bonus system that some bonus item with different size can increase more socre and bring some abilities to the snake in a period of time.
