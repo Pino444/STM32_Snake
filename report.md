@@ -30,6 +30,6 @@ This project is to implement the Snake Game on STM32 with LCD display and keys t
    7. Judgement of the game status.
    8. Status clear and game restart
 2.  LCD driver and image rendering are using module `LCD.h` and its implementation `LCD.c` provided by ALIENTEK(正点原子). This module includes some utility functions we use in the Snake Game:
-   1. Draw points, circles, lines and rectangles.
-   2. Fill area with color.
-   3. Write character, number and string.
+    1. Draw points, circles, lines and rectangles.
+    2. Fill area with color.
+    3. Write character, number and string.
